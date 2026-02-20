@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RRB JE Mini Mock Test</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .question { margin-bottom: 20px; padding:10px; border:1px solid #ccc; }
+        #timer { font-size: 20px; color: red; margin-bottom:20px; }
+        button { padding: 10px 15px; font-size:16px; }
+    </style>
+</head>
+<body>
+
+<h1>RRB JE Mini Mock Test</h1>
+<div id="timer"></div>
+<form id="quizForm"></form>
+<button onclick="submitQuiz()">Submit</button>
+<p id="result"></p>
+
+<script>
+
+const questions = [
+{
+question: "For the life processes, the transfer of a source of energy from outside the body of the organism is called _______.",
+options: ["excretion","respiration","digestion","nutrition"],
+answer: "nutrition"
+},
+{
+question: "For a trip of 600 km, a truck travels the first 300 km at 42 km/hr. What speed for remaining distance so average speed is 63 km/hr?",
+options: ["126","141","101","106"],
+answer: "126"
+},
+{
+question: "Find the simple interest on ₹4,000 at 6% per annum from 21 Feb 2024 to 22 April 2024.",
+options: ["41","38","39","40"],
+answer: "40"
+},
+{
+question: "FCA HEC JGE LIG ?",
+options: ["NKI","NKJ","NLJ","NLI"],
+answer: "NKI"
+},
+{
+question: "Rajesh ranked 17th from top and 44th from bottom. Total students?",
+options: ["61","60","59","58"],
+answer: "60"
+},
+{
+question: "Circular seating puzzle – How many people sit between S and X from right of S?",
+options: ["Two","One","Three","Four"],
+answer: "Three"
+},
+{
+question: "One pipe fills tank in 9 min, another empties in 90 min. Time to fill half tank?",
+options: ["5","10","6","11"],
+answer: "5"
+},
+{
+question: "Circular seating – How many people sit between D and G from right of D?",
+options: ["Four","One","Two","Three"],
+answer: "Two"
+},
+{
+question: "Tanveer direction problem – Shortest distance to reach Point B?",
+options: ["5 km south","7 km south","6 km south","4 km south"],
+answer: "7 km south"
+},
+{
+question: "Poonam sold book at 5% loss, Mohini at 8% profit. Final price ₹1539. Original cost?",
+options: ["1600","1550","1500","1650"],
+answer: "1500"
+}
+];
+
+let timeLeft = 540; // 9 minutes
+
+function loadQuestions() {
+    const quizForm = document.getElementById("quizForm");
+
+    questions.forEach((q, index) => {
+        let questionHTML = `<div class="question">
+        <p>${index + 1}. ${q.question}</p>`;
+
+        q.options.forEach(option => {
+            questionHTML += `
+            <input type="radio" name="q${index}" value="${option}"> ${option}<br>`;
+        });
+
+        questionHTML += `</div>`;
+        quizForm.innerHTML += questionHTML;
+    });
+}
+
+loadQuestions();
+
+let timer = setInterval(function() {
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    document.getElementById("timer").innerHTML =
+        "Time Left: " + minutes + ":" +
+        (seconds < 10 ? "0" : "") + seconds;
+
+    timeLeft--;
+
+    if (timeLeft < 0) {
+        clearInterval(timer);
+        submitQuiz();
+    }
+}, 1000);
+
+function submitQuiz() {
+    clearInterval(timer);
+    let score = 0;
+
+    questions.forEach((q, index) => {
+        let selected = document.querySelector(`input[name="q${index}"]:checked`);
+        if (selected && selected.value === q.answer) {
+            score++;
+        }
+    });
+
+    document.getElementById("result").innerHTML =
+        "<h2>Your Score: " + score + " / " + questions.length + "</h2>";
+}
+
+</script>
+
+</body>
+</html>
