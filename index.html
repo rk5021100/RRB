@@ -4,124 +4,193 @@
     <title>RRB JE Mini Mock Test</title>
     <style>
         body { font-family: Arial; margin: 20px; }
-        .question { margin-bottom: 20px; padding:10px; border:1px solid #ccc; }
-        #timer { font-size: 20px; color: red; margin-bottom:20px; }
-        button { padding: 10px 15px; font-size:16px; }
+        #timer { font-size: 20px; color: red; }
+        .question-box { margin-top: 20px; }
+        button { padding: 8px 15px; margin: 5px; }
+        #resultPage { display: none; }
     </style>
 </head>
 <body>
 
-<h1>RRB JE Mini Mock Test</h1>
+<h2>RRB JE Mini Mock Test</h2>
 <div id="timer"></div>
-<form id="quizForm"></form>
-<button onclick="submitQuiz()">Submit</button>
-<p id="result"></p>
+
+<div id="examPage">
+    <div class="question-box">
+        <p id="questionText"></p>
+        <div id="options"></div>
+    </div>
+
+    <button onclick="prevQuestion()">Previous</button>
+    <button onclick="nextQuestion()">Next</button>
+    <button onclick="submitQuiz()">Submit Test</button>
+</div>
+
+<div id="resultPage">
+    <h2>Score Card</h2>
+    <p id="attempted"></p>
+    <p id="correct"></p>
+    <p id="wrong"></p>
+    <p id="marks"></p>
+</div>
 
 <script>
 
 const questions = [
 {
-question: "For the life processes, the transfer of a source of energy from outside the body of the organism is called _______.",
+question: "For the life processes, the transfer of a source of energy from outside the body of the
+organism is called _______ .",
 options: ["excretion","respiration","digestion","nutrition"],
 answer: "nutrition"
 },
 {
-question: "For a trip of 600 km, a truck travels the first 300 km at 42 km/hr. What speed for remaining distance so average speed is 63 km/hr?",
+question: "For a trip of 600 km, a truck travels the first 300 km at a speed of 42 km/hr. At what
+speed (in km/hr) should it cover the remaining distance, so that the average speed for
+the entire journey is 63 km/hr?",
 options: ["126","141","101","106"],
 answer: "126"
 },
 {
-question: "Find the simple interest on ₹4,000 at 6% per annum from 21 Feb 2024 to 22 April 2024.",
+question: "Find the simple interest (in ₹) on ₹4,000 at 6% per annum rate of interest for the period
+from 21 February 2024 to 22 April 2024.",
 options: ["41","38","39","40"],
 answer: "40"
 },
 {
-question: "FCA HEC JGE LIG ?",
+question: "4What should come in place of the question mark (?) in the given series based on the
+English alphabetical order?
+FCA HEC JGE LIG  ?",
 options: ["NKI","NKJ","NLJ","NLI"],
 answer: "NKI"
 },
 {
-question: "Rajesh ranked 17th from top and 44th from bottom. Total students?",
+question: "Rajesh ranked 17th from the top and 44th from the bottom in his class. How many
+students are there in his class?",
 options: ["61","60","59","58"],
 answer: "60"
 },
 {
-question: "Circular seating puzzle – How many people sit between S and X from right of S?",
+question: "O, P, Q, R, S, T and X are sitting around a circular table facing the centre of the table.
+Only one person sits between Q and X when counted from the left of X. P sits third to
+the right of R. O sits third to the left of T. P sits to the immediate right of O. S is not an
+immediate neighbour of O. How many people sit between S and X when counted from
+the right of S?",
 options: ["Two","One","Three","Four"],
 answer: "Three"
 },
 {
-question: "One pipe fills tank in 9 min, another empties in 90 min. Time to fill half tank?",
+question: "One pipe can fill the tank in 9 minutes while another pipe can empty completely filled
+tank in 90 minutes. If both the pipes are operated together on empty tank, how long (in
+minutes) will it take to fill half of the tank ?",
 options: ["5","10","6","11"],
 answer: "5"
 },
 {
-question: "Circular seating – How many people sit between D and G from right of D?",
+question: "A, B, C, D, G, H, and I are sitting around a circular table facing the centre.
+B sits third to the left of I. G sits second to the left of H. Only I sits between A and G. C is
+not an immediate neighbor of B. How many people sit between D and G when counted
+from the right of D ?",
 options: ["Four","One","Two","Three"],
 answer: "Two"
 },
 {
-question: "Tanveer direction problem – Shortest distance to reach Point B?",
+question: "Tanveer starts from Point B and drives 2 km towards west. He then takes a right turn,
+drives 4 km, turns left and drives 5 km. He then takes a right turn and drives 3 km. He
+takes a final right turn, drives 7 km and stops at Point P. How far (shortest distance) and
+towards which direction should he drive in order to reach Point B again (all turns are
+90° turns only unless specified) ?",
 options: ["5 km south","7 km south","6 km south","4 km south"],
 answer: "7 km south"
 },
 {
-question: "Poonam sold book at 5% loss, Mohini at 8% profit. Final price ₹1539. Original cost?",
+question: "Poonam sold a book to Mohini at a loss of 5% and Mohini sold it to Rupashi at a profit
+of 8%. If Rupashi bought the book for ₹1,539, then what was the cost price (in ₹) of the
+book for Poonam ?",
 options: ["1600","1550","1500","1650"],
 answer: "1500"
 }
 ];
 
+let currentQuestion = 0;
+let userAnswers = new Array(questions.length).fill(null);
 let timeLeft = 540; // 9 minutes
 
-function loadQuestions() {
-    const quizForm = document.getElementById("quizForm");
+function loadQuestion() {
+    document.getElementById("questionText").innerText =
+        (currentQuestion + 1) + ". " + questions[currentQuestion].question;
 
-    questions.forEach((q, index) => {
-        let questionHTML = `<div class="question">
-        <p>${index + 1}. ${q.question}</p>`;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
 
-        q.options.forEach(option => {
-            questionHTML += `
-            <input type="radio" name="q${index}" value="${option}"> ${option}<br>`;
-        });
-
-        questionHTML += `</div>`;
-        quizForm.innerHTML += questionHTML;
+    questions[currentQuestion].options.forEach(option => {
+        let checked = userAnswers[currentQuestion] === option ? "checked" : "";
+        optionsDiv.innerHTML += `
+            <input type="radio" name="option" value="${option}" ${checked}
+            onclick="saveAnswer('${option}')"> ${option}<br>`;
     });
 }
 
-loadQuestions();
+function saveAnswer(option) {
+    userAnswers[currentQuestion] = option;
+}
+
+function nextQuestion() {
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+    }
+}
+
+function prevQuestion() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+    }
+}
+
+function submitQuiz() {
+    clearInterval(timer);
+
+    let attempted = 0;
+    let correct = 0;
+
+    userAnswers.forEach((ans, index) => {
+        if (ans !== null) {
+            attempted++;
+            if (ans === questions[index].answer) {
+                correct++;
+            }
+        }
+    });
+
+    let wrong = attempted - correct;
+    let marks = correct; // no negative marking yet
+
+    document.getElementById("examPage").style.display = "none";
+    document.getElementById("resultPage").style.display = "block";
+
+    document.getElementById("attempted").innerText = "Attempted: " + attempted;
+    document.getElementById("correct").innerText = "Correct: " + correct;
+    document.getElementById("wrong").innerText = "Wrong: " + wrong;
+    document.getElementById("marks").innerText = "Marks: " + marks + " / " + questions.length;
+}
 
 let timer = setInterval(function() {
     let minutes = Math.floor(timeLeft / 60);
     let seconds = timeLeft % 60;
-    document.getElementById("timer").innerHTML =
+
+    document.getElementById("timer").innerText =
         "Time Left: " + minutes + ":" +
         (seconds < 10 ? "0" : "") + seconds;
 
     timeLeft--;
 
     if (timeLeft < 0) {
-        clearInterval(timer);
         submitQuiz();
     }
 }, 1000);
 
-function submitQuiz() {
-    clearInterval(timer);
-    let score = 0;
-
-    questions.forEach((q, index) => {
-        let selected = document.querySelector(`input[name="q${index}"]:checked`);
-        if (selected && selected.value === q.answer) {
-            score++;
-        }
-    });
-
-    document.getElementById("result").innerHTML =
-        "<h2>Your Score: " + score + " / " + questions.length + "</h2>";
-}
+loadQuestion();
 
 </script>
 
